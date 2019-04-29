@@ -1,14 +1,20 @@
 const expect = require("expect");
 const request = require("supertest");
+const { ObjectID } = require("mongodb");
 
 const { app } = require("../Server");
 const { Todo } = require("../models/Todo");
 
-const item = [{ text: "eating food" }, { text: "eating thai food" }];
+const todos = [
+  { text: "eating food", _id: new ObjectID() },
+  { text: "eating thai food", _id: new ObjectID() }
+];
 
 beforeEach(done => {
   Todo.remove({})
-    .then(() => Todo.insertMany(item))
+    .then(() => {
+      return Todo.insertMany(todos);
+    })
     .then(() => done());
 });
 
@@ -65,3 +71,15 @@ describe("Get /todos", () => {
       .end(done());
   });
 });
+
+// describe("Get /todos", () => {
+//   it("should get all todos", done => {
+//     request(app)
+//       .get("/todos")
+//       .expect(200)
+//       .expect(res => {
+//         expect(res.body.todos.length).toBe(2);
+//       })
+//       .end(done());
+//   });
+// });
