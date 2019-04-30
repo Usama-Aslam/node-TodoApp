@@ -46,6 +46,20 @@ app.get("/todos/:id", (req, res) => {
     .catch(e => res.status(400).send(e));
 });
 
+app.delete("/todos/:id", (req, res) => {
+  const id = req.params.id;
+  if (!ObjectID.isValid(id))
+    return res.status(404).send({ error: "invalid Id" });
+
+  Todo.findByIdAndRemove(id)
+    .then(todo => {
+      if (!todo) return res.status(400).send({ error: "todo not found" });
+
+      res.status(200).send(todo);
+    })
+    .catch(e => res.status(400).send(e));
+});
+
 app.listen(PORT, () => console.log(`Server Running at ${PORT}`));
 
 module.exports = { app };
