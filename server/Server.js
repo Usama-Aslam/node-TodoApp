@@ -77,11 +77,13 @@ app.patch("/todos/:id", (req, res) => {
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then(todo => {
-    if (!todo) return res.status(404).send({ error: "invalid id" });
+  Todo.findByIdAndUpdate(id, { $set: body }, { new: true })
+    .then(todo => {
+      if (!todo) return res.status(404).send({ error: "invalid id" });
 
-    res.status(200).send({ todo });
-  });
+      res.status(200).send({ todo });
+    })
+    .catch(e => res.status(400).send(e));
 });
 
 //Users Route
@@ -93,7 +95,13 @@ app.post("/users", (req, res) => {
   newUser
     .save()
     .then(user => {
-      res.status(200).send(user);
+      return user.generateAuthToken();
+    })
+    .then(token => {
+      res
+        .status(200)
+        .header("x-auth", token)
+        .send(newUser);
     })
     .catch(e => res.status(400).send(e));
 });
