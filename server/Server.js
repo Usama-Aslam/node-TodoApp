@@ -84,6 +84,20 @@ app.patch("/todos/:id", (req, res) => {
   });
 });
 
+//Users Route
+
+app.post("/users", (req, res) => {
+  const body = _.pick(req.body, ["email", "password"]);
+  const newUser = new User(body);
+
+  newUser
+    .save()
+    .then(user => {
+      res.status(200).send(user);
+    })
+    .catch(e => res.status(400).send(e));
+});
+
 app.listen(PORT, () => console.log(`Server Running at ${PORT}`));
 
 module.exports = { app };
