@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const bcrypt = require("bcryptjs");
 
 const secret = "123abc";
 
@@ -77,6 +78,24 @@ UserSchema.statics.findByToken = function(token) {
 
 //--------------End-------------------
 
+//------------Mongoose Middleware----------------
+//use this function for any modification in user document.Here we used it to modify the password for hash
+UserSchema.pre("save", function(next) {
+  let user = this; //we get 'this' here because its running on a mongoose doc. so it automatically gets the doc
+
+  if (user.isModified("password")) {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        // console.log("password hashed");
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+//---------------------------------------------
 var User = mongoose.model("User", UserSchema);
 
 module.exports = {
