@@ -110,7 +110,7 @@ app.post("/users", (req, res) => {
 
 //we used 2 parameter as middleware. authenticate middleware will be used for verification of user.Http don't know who is making request. we are telling server that a particular user has come and he has this token please verify it and complete his request
 app.get("/users/me", authenticate, (req, res) => {
-  //we have received a new req.user property from middleware authenticate.js
+  //we have received a new req.user property from middleware authenticate.js.
   res.status(200).send(req.user);
 });
 
