@@ -76,6 +76,21 @@ UserSchema.statics.findByToken = function(token) {
   });
 };
 
+UserSchema.statics.findByCredentials = function(body) {
+  let User = this;
+  return User.findOne({ email: body.email }).then(user => {
+    if (!user) return Promise.reject();
+
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(body.password, user.password, (err, res) => {
+        if (res) {
+          return resolve(user);
+        } else reject();
+      });
+    });
+  });
+};
+
 //--------------End-------------------
 
 //------------Mongoose Middleware----------------
