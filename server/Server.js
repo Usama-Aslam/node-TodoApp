@@ -100,18 +100,27 @@ app.post("/users", (req, res) => {
       return user.generateAuthToken();
     })
     .then(token => {
+      // console.log("newUser", newUser);
       res
         .status(200)
         .header("x-auth", token)
-        .send(newUser);
+        .send({ newUser });
     })
-    .catch(e => res.status(400).send(e));
+    .catch(e => res.status(400).send({ error: "invalid details" }));
 });
 
 //we used 2 parameter as middleware. authenticate middleware will be used for verification of user.Http don't know who is making request. we are telling server that a particular user has come and he has this token please verify it and complete his request
 app.get("/users/me", authenticate, (req, res) => {
   //we have received a new req.user property from middleware authenticate.js.
-  res.status(200).send(req.user);
+  const user = req.user;
+  res.status(200).send({ user });
+});
+
+app.post("/users/login", (req, res) => {
+  const body = _.pick(req.body, ["email", "password"]);
+
+  res.send(body);
+  // User.findByCredentials();
 });
 
 app.listen(PORT, () => console.log(`Server Running at ${PORT}`));
